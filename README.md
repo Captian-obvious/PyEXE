@@ -1,6 +1,6 @@
 <h1>PyEXE</h1>
 <h3>PyEXE is a framework used by PyOS Linux to allow it to run python scripts directly from the desktop.</h3>
-PyEXE is a similar framework to .NET but has the unique advantage of being built-in to PyOS Linux.
+PyEXE is a similar framework to .NET but has the unique advantage of being built-in to PyOS Linux.<br>
 Main Features include:
 <ul>
     <li>Built-in to PyOS Linux.</li>
