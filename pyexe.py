@@ -6,6 +6,7 @@ import subprocess as sub;
 import threading as task;
 import tkinter as tk;
 exe_mark='pe';
+ver="3.35.1";
 
 if (platform.system()=='Linux'):
     exe_mark='elf';
@@ -130,6 +131,21 @@ class JIT_Compiler:
     ##end
 ##end
 
+class Interactive:
+    def __init__(self):
+        pass;
+    ##end
+    def start(self):
+        arch=platform.machine();
+        print(f'PyEXE {ver} ({arch}) on {platform.system()}');
+        print(f'Type help(),liscense(),or copyright() for more information.');
+        while True:
+            cmd=input('>>>');
+            eval(cmd);
+        ##end
+    ##end
+##end
+
 def processFiles(files:list[str]):
     for i in range(len(files)):
         fn=files[i-1];
@@ -145,6 +161,8 @@ def processFiles(files:list[str]):
 def main(argc:int,argv:list[str]):
     if (argc<2):
         print('No input file(s) specified!');
+        inter=Interactive();
+        inter.start();
     else:
         args=argv[1:];
         processFiles(args);
