@@ -5,6 +5,7 @@ from dis import dis;
 import subprocess as sub;
 import threading as task;
 import tkinter as tk;
+import traceback;
 exe_mark='pe';
 ver="3.35.1";
 
@@ -138,11 +139,146 @@ class Interactive:
     def start(self):
         arch=platform.machine();
         print(f'PyEXE {ver} ({arch}) on {platform.system()}');
-        print(f'Type help(),liscense(),or copyright() for more information.');
+        print(f'Type help(), copyright(), credits(), or license() for more information.');
         while True:
             cmd=input('>>>');
-            eval(cmd);
+            if cmd==None:
+                cmd="";
+            ##endif
+            if cmd.startswith('if '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('def '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('for '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('while '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('try'):
+                if cmd.endswith(":"):
+                    cmd=self.__define_try__(cmd,1);
+                ##endif
+            ##endif
+            try:
+                exec(cmd);
+            except Exception as e:
+                print(traceback.format_exc());
+            ##endtry
         ##end
+    ##end
+    def __define__(self,cmd,layer):
+        function_typing=True;
+        def_content=cmd+"\n";
+        indent=4;
+        while function_typing:
+            cmd2=input('...'+" "*(indent*layer));
+            if cmd2==None:
+                cmd2="";
+            ##endif
+            if cmd2.startswith('if '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('def '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('for '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('while '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('try'):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define_try__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            ##endif
+            if cmd2=="":
+                break;
+            else:
+                def_content+=(" "*(indent*layer))+cmd2+"\n";
+            ##endif
+        ##end
+        return def_content
+    ##end
+    def __define_try__(self,cmd,layer):
+        function_typing=True;
+        def_content=cmd+"\n";
+        indent=4;
+        try_indent=" "*(indent*(layer-1));
+        while function_typing:
+            cmd2=input('...'+try_indent);
+            if cmd2==None:
+                cmd2="";
+            ##endif
+            if cmd2.startswith(" "*(indent*layer)+'if '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'def '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'for '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'while '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'try'):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define_try__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            ##endif
+            if cmd2=="":
+                break;
+            else:
+                def_content+=try_indent+cmd2+"\n";
+            ##endif
+        ##end
+        return def_content;
     ##end
 ##end
 
