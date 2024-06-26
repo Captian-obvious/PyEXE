@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-import io,os,platform,sys,time;
+import argparse,io,os,platform,sys,time;
 import contextlib as ctx;
 from dis import dis;
 import subprocess as sub;
 import threading as task;
-import tkinter as tk;
+#import tkinter as tk;
 import traceback;
 exe_mark='pe';
 ver="3.35.1";
@@ -22,6 +22,9 @@ class file_reader:
             def __init__(self,data):
                 # Parse the ELF header data (e.g., read from a file)
                 self.magic_number=data[0:4];# ELF magic number (usually b'\x7fELF')
+                if self.magic_number!=b"\x7fELF":
+                    return "invalid";
+                ##endif
                 self.file_class=data[4];# 32-bit (1) or 64-bit (2)
                 self.endianness=data[5];# Little-endian (1) or big-endian (2)
                 self.version=data[6];# ELF version (usually 1)
@@ -64,7 +67,10 @@ class file_reader:
             def __init__(self,data):
                 #self.magic=b"PE\x00\x00";
                 # Parse the PE header data (e.g., read from a file)
-                self.pe_signature = data[0:4];                                      # PE magic number (usually b'MZ')
+                self.pe_signature = data[0:4];# PE magic number (usually b'MZ')
+                if self.pe_signature!=b"MZ":
+                    return "invalid";
+                ##endif
                 self.machine_type = int.from_bytes(data[4:6],byteorder='little');
                 self.num_sections = int.from_bytes(data[6:8],byteorder='little');
                 self.head_len=20;
@@ -106,7 +112,9 @@ class file_reader:
     ##end
     def read_header(self):
         the_header=self.fheader(self.read());
-        the_header_length=the_header.head_len;
+        if the_header!="invalid":
+            the_header_length=the_header.head_len;
+        ##endif
         return the_header;
     ##end
     def read(self,*args):
@@ -138,8 +146,8 @@ class Interactive:
     ##end
     def start(self):
         arch=platform.machine();
-        print(f'PyEXE {ver} ({arch}) on {platform.system()}');
-        print(f'Type help(), copyright(), credits(), or license() for more information.');
+        print(f'PyEXE v{ver} ({arch}) on {platform.system()}');
+        print(f'Type "help", "copyright", "credits", or "license" for more information.');
         while True:
             cmd=input('>>>');
             if cmd==None:
@@ -282,6 +290,28 @@ class Interactive:
     ##end
 ##end
 
+def processArgs(args):
+    parser=argparse.ArgumentParser(description='PyEXE (built-in)');
+    parser.add_argument('--build',action='store_true',help='Create a PyEXE binary from a python script');
+    parser.add_argument('--interactive','-i',action='store_true',help='Load interactive interpreter.');
+    parser.add_argument('files', nargs='*',help='Input file path(s)');
+    parser.add_argument('--output','--out','--outfile','-o', help='Output file path');
+    args=parser.parse_args(args);
+    if args.build:
+        print('running build');
+        build(args);
+    elif args.interactive:
+        inter=Interactive();
+        inter.start();
+    else:
+        processFiles(args.files);
+    ##endif
+##end
+
+def build(args):
+    print(args.files);
+##end
+
 def processFiles(files:list[str]):
     for i in range(len(files)):
         fn=files[i-1];
@@ -301,7 +331,7 @@ def main(argc:int,argv:list[str]):
         inter.start();
     else:
         args=argv[1:];
-        processFiles(args);
+        processArgs(args);
     ##endif
 ##end
 main(len(sys.argv),sys.argv);
