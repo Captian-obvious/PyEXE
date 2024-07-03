@@ -8,3 +8,4 @@ Main Features include:
     <li>Can generate executables from python scripts with the --build parameter</li>
     <li>Simple to use, just drop a .py file onto the desktop of PyOS Linux and PyEXE will run it like a program.</li>
 </ul>
+<em>This project is a WIP, it is not finished</em>
