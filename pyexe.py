@@ -140,6 +140,24 @@ class JIT_Compiler:
     ##end
 ##end
 
+class Interpeter:
+    def __init__(self):
+        self.code="";
+        self.finished=False;
+    ##end
+    def init(self,codetorun=""):
+        self.fimished=False;
+        if codetorun!="":
+            self.code=codetorun;
+        ##endif
+    ##end
+    def run(self):
+        loaded=self.code;
+        output=exec(loaded);
+        self.fimished=True;
+    ##end
+##end
+
 class Interactive:
     def __init__(self):
         pass;
@@ -296,6 +314,7 @@ def processArgs(args):
     parser.add_argument('--interactive','-i',action='store_true',help='Load interactive interpreter.');
     parser.add_argument('files', nargs='*',help='Input file path(s)');
     parser.add_argument('--output','--out','--outfile','-o', help='Output file path');
+    parser.add_argument('-c',help='code to be ran');
     args=parser.parse_args(args);
     if args.build:
         print('running build');
@@ -303,6 +322,11 @@ def processArgs(args):
     elif args.interactive:
         inter=Interactive();
         inter.start();
+    elif args.c:
+        thecode=args.c;
+        compiler=Interpreter();
+        compiler.init(thecode);
+        compiler.run();
     else:
         processFiles(args.files);
     ##endif
