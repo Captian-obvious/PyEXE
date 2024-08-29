@@ -140,13 +140,13 @@ class JIT_Compiler:
     ##end
 ##end
 
-class Interpeter:
+class Interpreter:
     def __init__(self):
         self.code="";
         self.finished=False;
     ##end
     def init(self,codetorun=""):
-        self.fimished=False;
+        self.finished=False;
         if codetorun!="":
             self.code=codetorun;
         ##endif
@@ -154,7 +154,7 @@ class Interpeter:
     def run(self):
         loaded=self.code;
         output=exec(loaded);
-        self.fimished=True;
+        self.finished=True;
     ##end
 ##end
 
