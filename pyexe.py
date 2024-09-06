@@ -8,11 +8,9 @@ import threading as task;
 import traceback;
 exe_mark='pe';
 ver="3.45.3";
-
 if (platform.system()=='Linux'):
     exe_mark='elf';
 ##endif
-
 class file_reader:
     class exe_headers:
         def __init__(self):
@@ -139,7 +137,6 @@ class JIT_Compiler:
         pass;
     ##end
 ##end
-
 class Interpreter:
     def __init__(self):
         self.code="";
@@ -157,7 +154,6 @@ class Interpreter:
         self.finished=True;
     ##end
 ##end
-
 class Interactive:
     def __init__(self):
         pass;
@@ -184,6 +180,10 @@ class Interactive:
                     cmd=self.__define__(cmd,1);
                 ##endif
             elif cmd.startswith('while '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('class '):
                 if cmd.endswith(":"):
                     cmd=self.__define__(cmd,1);
                 ##endif
@@ -231,6 +231,13 @@ class Interactive:
                 ##endif
             elif cmd2.startswith('while '):
                 if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('class '):
+                if cmd.endswith(":"):
                     cmd2=self.__define__(cmd2,layer+1);
                 else:
                     def_content=cmd2;
@@ -290,6 +297,13 @@ class Interactive:
                     def_content=cmd2;
                     break;
                 ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'class '):
+                if cmd.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
             elif cmd2.startswith(" "*(indent*layer)+'try'):
                 if cmd2.endswith(":"):
                     cmd2=self.__define_try__(cmd2,layer+1);
@@ -307,7 +321,6 @@ class Interactive:
         return def_content;
     ##end
 ##end
-
 def processArgs(args):
     parser=argparse.ArgumentParser(description='PyEXE (built-in)');
     parser.add_argument('--build',action='store_true',help='Create a PyEXE binary from a python script');
@@ -331,23 +344,35 @@ def processArgs(args):
         processFiles(args.files);
     ##endif
 ##end
-
 def build(args):
     print(args.files);
 ##end
-
 def processFiles(files:list[str]):
     for i in range(len(files)):
         fn=files[i-1];
         try:
-            exe_file_reader=file_reader(fn,'elf');
-            print(exe_file_reader.read_header());
+            if (fn.endswith('.py') or fn.endswith('.pyw')):
+                thefile=open(fn,mode="r");
+                theexecute=Interpreter();
+                theexecute.init(thefile.read());
+                theexecute.run();
+            else:
+                #check if its an ascii executable (it might be for linux)
+                thefile=open(fn,mode="r");
+                if e:
+                    theexecute=Interpreter();
+                    theexecute.init(thefile.read());
+                    theexecute.run();
+                else:
+                    exe_file_reader=file_reader(fn,'elf');
+                    print(exe_file_reader.read_header());
+                ##endif
+            ##endif
         except Exception as e:
             print(e);
         ##endtry
     ##end
 ##end
-
 def main(argc:int,argv:list[str]):
     if (argc<2):
         print('No input file(s) specified!');
