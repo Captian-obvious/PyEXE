@@ -7,7 +7,7 @@ import threading as task;
 #import tkinter as tk;
 import traceback;
 exe_mark='pe';
-ver="3.45.3";
+ver="3.45.3"; 
 if (platform.system()=='Linux'):
     exe_mark='elf';
 ##endif
